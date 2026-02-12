@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package todoPackage;
+
+service Todo {
+    rpc createTodo(TodoItem) returns (TodoItem);
+    // You must include the 'void' message here!
+    rpc readTodos(void) returns (TodoItems); 
+} 
+
+message void {}
+
+message TodoItem {
+    int32 id = 1;
+    string text = 2;
+}
+
+message TodoItems {
+   // Added the missing '= 1' tag here as well
+   repeated TodoItem items = 1; 
+}
