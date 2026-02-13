@@ -1,7 +1,7 @@
 const grpc = require('@grpc/grpc-js'); // Changed from 'grpc'
 const protoLoader = require('@grpc/proto-loader');
 
-const packageDef = protoLoader.loadSync('todo.proto', {});
+const packageDef = protoLoader.loadSync('./todo.proto', {});
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 const todoPackage = grpcObject.todoPackage;
 
@@ -25,17 +25,19 @@ server.addService(todoPackage.Todo.service, {
     "createTodo": createTodo,
     "readTodos": readTodos,
 });
+const todos = []; // In-memory store for todo items
 
 function createTodo(call, callback) {
     console.log('Received from client: ' + call.request.text);
     const todoItem = {
-        id: 1, // In a real app, you'd increment this
+        id: todos.length+1, // In a real app, you'd increment this
         text: call.request.text
     };
+    todos.push(todoItem); // Store the new todo item
     callback(null, todoItem);
 }
 
 function readTodos(call, callback) {
     // Basic placeholder implementation to avoid hanging the client
-    callback(null, { items: [] });
+    callback(null, { "TodoItems":todos });
 }

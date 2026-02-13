@@ -1,18 +1,21 @@
-const grpc=require('grpc');
-const protoLoader=require('@grpc/proto-loader');
+const grpc = require('@grpc/grpc-js'); // Changed from 'grpc'
+const protoLoader = require('@grpc/proto-loader');
 const packageDef=protoLoader.loadSync('todo.proto',{})
 const grpcObject=grpc.loadPackageDefinition(packageDef);
 const todoPackage=grpcObject.todoPackage; 
 
 const client=new todoPackage.Todo('localhost:40000', grpc.credentials.createInsecure());
 
+const text=process.argv[2] || "Hello from gRPC client!";
 client.createTodo(
     {
         "id":-1,
-        "text":"Learn gRPC"
+        "text":text
     },
     (err, response) => {
-        if(err) console.error(err);
-        else console.log('Created Todo:', response);
+        console.log('Received from server: ' + JSON.stringify(response));
     }  
 )
+client.createTodos({},(err,response)=>{
+    console.log('Received from server: ' + JSON.stringify(response));
+})
