@@ -24,6 +24,7 @@ server.bindAsync(
 server.addService(todoPackage.Todo.service, {
     "createTodo": createTodo,
     "readTodos": readTodos,
+    "streamTodos": streamTodos,
 });
 const todos = []; // In-memory store for todo items
 
@@ -38,6 +39,13 @@ function createTodo(call, callback) {
 }
 
 function readTodos(call, callback) {
-    // Basic placeholder implementation to avoid hanging the client
-    callback(null, { "TodoItems":todos });
+    callback(null, { 
+        "items": todos // Ensure the key is "items"
+    });
 }
+function streamTodos(call) {
+    todos.forEach(todo => {
+        call.write(todo);
+    });
+    call.end();
+}       

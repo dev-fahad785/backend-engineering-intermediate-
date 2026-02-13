@@ -4,11 +4,12 @@ package todoPackage;
 
 service Todo {
     rpc createTodo(TodoItem) returns (TodoItem);
-    // You must include the 'void' message here!
-    rpc readTodos(void) returns (TodoItems); 
+    rpc readTodos(voidNoParams) returns (TodoItems); 
+    rpc streamTodos(voidNoParams) returns(stream TodoItems);
 } 
 
-message void {}
+// This is your defined message type
+message voidNoParams {}
 
 message TodoItem {
     int32 id = 1;
@@ -16,6 +17,5 @@ message TodoItem {
 }
 
 message TodoItems {
-   // Added the missing '= 1' tag here as well
    repeated TodoItem items = 1; 
 }

@@ -7,15 +7,28 @@ const todoPackage=grpcObject.todoPackage;
 const client=new todoPackage.Todo('localhost:40000', grpc.credentials.createInsecure());
 
 const text=process.argv[2] || "Hello from gRPC client!";
-client.createTodo(
-    {
-        "id":-1,
-        "text":text
-    },
-    (err, response) => {
-        console.log('Received from server: ' + JSON.stringify(response));
-    }  
-)
-client.createTodos({},(err,response)=>{
-    console.log('Received from server: ' + JSON.stringify(response));
+// Improved Callback Logic
+client.createTodo({ "id": -1, "text": text }, (err, response) => {
+    if (err) {
+        console.error('Create Error:', err.message);
+        return;
+    }
+    console.log('Created:', response);
+
+    // Call readTodos ONLY after creation is successful
+    client.readTodos({}, (err, response) => {
+        console.log('Read Todos Response:', JSON.stringify(response)); // Log the full response for clarity
+        if(!response.items){
+        response.items.forEach(todo => {
+            console.log(`Todo ID: ${todo.id}, Text: ${todo.text}`);
+        });
+    }});
+});
+
+const call=client.streamTodos();
+call.on('data',item=>{
+    console.log("received from server: "+JSON.stringify(item));
+})
+call.on('end',()=>{
+    console.log("Stream ended by server.");
 })
